@@ -1,58 +1,99 @@
 // Code goes here!
 // ცლასების ნეიმინგ კონვენციაა - დიდი ასოთი დაწყება
-class Department {
+abstract class Department {
+  static fiscalYear = 2020;
+  protected employees: string[] = [];
 
-    // private depName:string; // დეფაულტზეა
-    private employees: string[] = []; // პირდაპირ გარედან ვერ მიწვდებიან ობიექტში ამ ფროფერთის. იგი ასევე მეთოდებთანაც შეგიძლია გამოიყენო და ეგ მეთოდები მხოლოდ შიგნით იქნება ხელმისაწვდომი.
+  constructor(protected readonly id: string, public name: string) {}
 
-    constructor(private readonly id:string, public depName:string) {
-        this.depName = depName;
-        this.id = id
+  static createEmployee(name: string) {
+    return { name: name };
+  }
 
-        /// კონსტრუქტორშივე თუ ვუწერთ აქსეს მოდიფაიერს, იგი ავტომატურად შეუქმნის ობიექტს ფროფერთიებს
+  abstract describe(this: Department): void;
 
-        // readonly - იგი ნიშნავს, რომ ამ ფროფერთის ინიციალიზების მერე, ანუ რაც კონსტრუქტორში მოხდება, მის მერე ვეღარ შევცვლით
-    } 
-    // constructor გაეშვება მაშინ, როცა ობიექტი შეიქმნება new - ქივორდით, ანუ ახალი ინსტანსი. იგი ინიციალიზებაში იღებს მონაწილეობას - ფროფერთიების და მნიშვნელობების.
+  addEmployee(employee: string) {
+    this.employees.push(employee);
+  }
 
-    describe() {
-        console.log(`Department: (${this.id}): ${this.depName}`)
-    }
-
-    solveDescribe(this:Department) {
-        console.log('Department: ' + this.depName)
-    } 
-    // ამ შემთხვევაში Type-Safety-ს განვსაზღვრავთ, რათა სხვა ობიექტის მიერ არ მოხდეს ამ მეთოდის გამოძახება. this არგუმენტად არ ნიშნავს რომ არგუმენტს მოითხოვს მეთოდი.
-
-    addEmployee(employee:string) {
-        this.employees.push(employee)
-    }
-
-    printEmployeeInformation() {
-        console.log(this.employees.length);
-        console.log(this.employees)
-    }
+  printEmployeeInformation() {
+    console.log(this.employees.length);
+    console.log(this.employees);
+  }
 }
 
-const accounting = new Department('d1','Accounting') // შეიქმნება ობიექტი class-ის ბლუპრინტზე დაყრდნობით
+class ItDepartment extends Department {
+  admins: string[];
+  constructor(id: string, admins: string[]) {
+    super(id, "IT");
+    this.admins = admins;
+  }
 
-accounting.addEmployee('Max')
-accounting.addEmployee('Manu')
+  describe() {
+      console.log('It Department - ID: ' + this.id)
+  }
+}
 
-// accounting.employees.push('Anna') // ეს არაა სასურველი
+class AccountingDepartment extends Department {
+  private lastReport: string;
+  private static instance: AccountingDepartment; 
 
-accounting.printEmployeeInformation()
+  get mostRecentReport() {
+    if (this.lastReport) return this.lastReport;
+    throw new Error("No report found.");
+  }
 
-// JS-ში კომპილირების შემდეგ, name ცალკე ფილდად არ იარსებებს, რადგან ჯერ es6 მას მხარს არ უჭერს
+  set mostRecentReport(value: string) {
+    if (!value) throw new Error("Please pass in a valid value!");
+    this.addReport(value);
+  }
 
-// const acccountingCopy = { describe: accounting.describe }
-// acccountingCopy.describe() // undefined
+  private constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+    this.lastReport = reports[0];
+  }
 
-// this - ქივორდი ამ უკანასკნელ შემთხვევაში არ იმუშავებს, რადგან იგი მიმართავს იმ ობიექტს, რომელიც პასუხისმგებელია მის გამოძახებაზე. ვინაიდან ეს უკანასკნელი არ ფლობს depName ფროფერთის, იგი undefined იქნება
+  static getInstance() {
+    if(AccountingDepartment.instance){
+        return this.instance
+    }
+    this.instance = new AccountingDepartment('d2', [])
+    return this.instance;
+  }
+
+  describe() {
+      console.log(`Accounting Department - ID: ${this.id}`)
+  }
+
+  addEmployee(name: string) {
+    if (name.trim().toLocaleLowerCase() === "gio") return;
+    this.employees.push(name);
+  }
 
 
-// const accountingCopy1 = {depName: 'Solving prop!', solveDescribe: accounting.solveDescribe, describe: accounting.describe}
+  addReport(text: string) {
+    this.reports.push(text);
+    this.lastReport = text;
+  }
 
-// accountingCopy1.solveDescribe()
+  printReports() {
+    console.log(this.reports);
+  }
+}
+const employee1 = Department.createEmployee("Max");
+console.log(employee1);
+console.log(Department.fiscalYear)
 
-// მხოლოდ ამ უკანასკნელ შემთხვევაში შევძლებდით გამოსწორებას, ანუ თუ მივამსგავსებდით იგივე ობიექტს, რომლიდანაც მოაქვს მეთოდი.
+const it = new ItDepartment("d1", ["Gio"]);
+
+const accounting = AccountingDepartment.getInstance();
+
+
+
+
+accounting.mostRecentReport = "Year End Report";
+accounting.addReport("Someting went wrong...");
+
+accounting.describe()
+// accounting.printReports();
+// accounting.printEmployeeInformation();
