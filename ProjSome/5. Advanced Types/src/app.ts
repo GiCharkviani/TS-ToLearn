@@ -135,9 +135,9 @@ const errorBag: ErrorContainer = {
   username: "Must start with a capital character!",
 };
 
-// Function overloads 
+// Function overloads
 
-function daamate(n:number):number; // ოფშენალად აქცია მეორე პარამეტრი
+function daamate(n: number): number; // ოფშენალად აქცია მეორე პარამეტრი
 function daamate(a: number, b?: number): number;
 function daamate(a: string, b?: string): string;
 function daamate(a: Combinable, b?: Combinable): Combinable {
@@ -147,31 +147,30 @@ function daamate(a: Combinable, b?: Combinable): Combinable {
   return a + b!;
 }
 
-const resultHere = daamate('Max', 'Charkvi')
-resultHere.split('')
+const resultHere = daamate("Max", "Charkvi");
+resultHere.split("");
 
-// Optional Chaining 
+// Optional Chaining
 const fetchedUserData = {
-    id: 'u1',
-    name: 'Max',
-    job: {
-        title: 'CEO',
-        description: 'My own company'
-    }
-}
+  id: "u1",
+  name: "Max",
+  job: {
+    title: "CEO",
+    description: "My own company",
+  },
+};
 
 // JS-ში ასე შევამოწმებდით:
-console.log(fetchedUserData.job && fetchedUserData.job.title)
+console.log(fetchedUserData.job && fetchedUserData.job.title);
 
 // TS-ში ასე იქნებოდა - Optional Chaining:
-console.log(fetchedUserData?.job?.title)
-
+console.log(fetchedUserData?.job?.title);
 
 // Nullish Coalescing
 const userInput = null;
 
-// JS-ში 
-const storedData = userInput || 'DEFAULT';
+// JS-ში
+const storedData = userInput || "DEFAULT";
 
 // TS-ში
-const storedDataTS = userInput ?? 'DEFAULT';
+const storedDataTS = userInput ?? "DEFAULT";
